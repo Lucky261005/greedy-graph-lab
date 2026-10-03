@@ -1,0 +1,204 @@
+Spanning the Cheapest Way
+(Design & Analysis of Algorithms)
+
+Connect every node, spend as little as possible, and never change your mind. Kruskal’s and Prim’s algorithms show how being greedy can be proven to be optimal.
+
+Q1: Six towns, nine possible cables, each with a price. Which cables do you lay?
+Q2: Can making the cheapest choice at each step give you the cheapest possible total?
+
+## The problem
+
+A telecom company must lay fibre between six towns. Every possible link has a price, every town must be reachable, and there is little budget. Which links do you buy?
+
+This is the Minimum Spanning Tree (MST) problem. It is the cleanest showcase of the greedy strategy: make the cheapest safe choice now and never look back.
+
+## Greedy & spanning trees
+
+A greedy algorithm builds a solution one step at a time, always taking the option that looks best right now. It will work if two properties hold:
+
+Greedy-choice property: A locally optimal choice can always be extended to a globally optimal solution.
+Optimal substructure: After one choice, what remains is a smaller problem of the same kind.
+
+For a connected, undirected, weighted graph G = (V, E), a spanning tree touches every vertex, is connected, and has no cycles (which forces it to have exactly |V| − 1 edges). The MST is the spanning tree with the smallest total weight.
+
+The cut property — why greedy is safe. Partition the vertices into any two groups. The lightest edge crossing between the groups belongs to some MST. Kruskal and Prim both lean on this single fact; they only differ in which cut they look at.
+
+## Running example
+
+Both algorithms below use the same graph: six vertices, nine edges. Weights are shown on the amber tags.
+[DIAGRAM]
+Figure 1 — The input graph. Grey edges are candidates; nothing is chosen yet.
+
+## Kruskal’s algorithm
+
+Think edges first. Sort every edge by weight, walk through them from cheapest to heaviest, and keep an edge only if it doesn’t close a cycle. Once you have |V| − 1 edges, you stop. Cycle detection is done with a Disjoint Set Union (union–find): an edge closes a cycle exactly when both endpoints already share a set.
+
+### Pseudocode
+
+KRUSKAL(G):
+    A = {}
+    for each vertex v: MAKE-SET(v)
+    sort edges of G by weight, ascending
+    for each edge (u, v) in sorted order:
+        if FIND-SET(u) != FIND-SET(v):
+            A = A U {(u, v)}
+            UNION(u, v)
+    return A
+
+### Tracing the example
+
+Sorted edges: B–C (1), A–C (2), D–E (2), E–F (3), A–B (4), B–D (5), D–F (6), C–D (8), C–E (10).
+Step | Edge | Weight | Decision | Total
+1 | B – C | 1 | accept | 1
+2 | A – C | 2 | accept | 3
+3 | D – E | 2 | accept | 5
+4 | E – F | 3 | accept | 8
+5 | A – B | 4 | reject · cycle | 8
+6 | B – D | 5 | accept | 13
+7 | D – F | 6 | reject · cycle | 13
+8 | C – D | 8 | reject · cycle | 13
+9 | C – E | 10 | reject · cycle | 13
+
+A–B is rejected: A and B are already joined via C, so it would form the cycle A–C–B. B–D is accepted because it bridges the two components {A, B, C} and {D, E, F}. That is the 5th accepted edge (6 − 1), so we stop and the last three edges are never examined.
+[DIAGRAM]
+Figure 2 — Kruskal’s result. Highlighted edges form the MST, total weight 13.
+
+### Python implementation
+
+class DSU:
+    def __init__(self, vertices):
+        self.parent = {v: v for v in vertices}
+        self.rank = {v: 0 for v in vertices}
+
+    def find(self, x):   # path compression
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, a, b):   # union by rank
+        ra, rb = self.find(a), self.find(b)
+        if ra == rb:
+            return False   # same set: cycle
+        if self.rank[ra] < self.rank[rb]:
+            ra, rb = rb, ra
+        self.parent[rb] = ra
+        if self.rank[ra] == self.rank[rb]:
+            self.rank[ra] += 1
+        return True
+
+def kruskal(vertices, edges):   # edges = [(u, v, w), ...]
+    dsu, mst, total = DSU(vertices), [], 0
+    for u, v, w in sorted(edges, key=lambda e: e[2]):
+        if dsu.union(u, v):
+            mst.append((u, v, w))
+            total += w
+            if len(mst) == len(vertices) - 1:
+                break
+    return mst, total
+
+### Complexity
+
+Sorting: O(E log E) = O(E log V), since log E ≤ 2 log V.
+Union–find: E finds and at most V − 1 unions cost O(E α(V)) — virtually linear.
+Time: O(E log V) — dominated by the sort.
+Space: O(V + E) — edge list plus the DSU arrays.
+
+## Prim’s algorithm
+
+Think vertices first. Start at any vertex, and grow one tree. At every step, add the cheapest edge that connects a vertex inside the tree to a vertex outside. A min-heap makes “cheapest crossing edge” a fast lookup.
+
+### Pseudocode
+
+PRIM(G, s):
+    for each vertex v: key[v] = INF, parent[v] = NIL
+    key[s] = 0
+    Q = all vertices   // min-priority queue on key
+    while Q is not empty:
+        u = EXTRACT-MIN(Q)
+        for each neighbour v of u:
+            if v in Q and w(u, v) < key[v]:
+                parent[v] = u
+                key[v] = w(u, v)   // DECREASE-KEY
+    return {(v, parent[v])}
+
+### Tracing the example (start at A)
+
+Step | Edge picked | Weight | Tree after step
+1 | A – C | 2 | {A, C}
+2 | C – B | 1 | {A, B, C}
+3 | B – D | 5 | {A, B, C, D}
+4 | D – E | 2 | {A, B, C, D, E}
+5 | E – F | 3 | {A, B, C, D, E, F}
+
+Total = 2 + 1 + 5 + 2 + 3 = 13, identical to Kruskal. The edge weights here are such that this MST is the only minimum one, so both algorithms must agree.
+[DIAGRAM]
+Figure 3 — Prim’s tree after six vertices are absorbed. Same edges, different order of discovery.
+
+### Python implementation
+
+import heapq
+
+def prim(graph, start):   # graph[u] = [(v, w), ...]
+    visited, mst, total = {start}, [], 0
+    heap = [(w, start, v) for v, w in graph[start]]
+    heapq.heapify(heap)
+    while heap and len(visited) < len(graph):
+        w, u, v = heapq.heappop(heap)   # cheapest crossing edge
+        if v in visited:
+            continue
+        visited.add(v)
+        mst.append((u, v, w))
+        total += w
+        for x, wx in graph[v]:
+            if x not in visited:
+                heapq.heappush(heap, (wx, v, x))
+    return mst, total
+
+### Complexity
+
+Implementation | Time | Space
+Adjacency matrix + array | O(V²) | O(V²)
+Adjacency list + binary heap | O(E log V) | O(V + E)
+Adjacency list + Fibonacci heap | O(E + V log V) | O(V + E)
+
+## Kruskal vs. Prim
+
+Aspect | Kruskal | Prim
+Strategy | Merges a forest, edge by edge | Grows one tree, vertex by vertex
+Key structure | Sort + union–find | Priority queue
+Time | O(E log V) | O(E log V)
+Best on | Sparse graphs | Dense graphs (O(V²) version)
+Mid-run state | A forest, possibly disconnected | Always one connected tree
+Disconnected input | Yields a spanning forest | Only reaches the start’s component
+
+Rule of thumb. Few edges relative to vertices? Reach for Kruskal. Nearly complete graph? Prim with an adjacency matrix beats everything at O(V²).
+
+## Where they show up
+
+Network design
+- Road and rail layouts
+- Fibre and power grids
+- Water pipelines
+
+Routing
+- Broadcast and multicast trees
+- Spanning Tree Protocol in switches
+
+Clustering
+- Delete the heaviest MST edges to split data into k clusters
+- Image segmentation
+
+Approximation
+- 2-approximation for the Travelling Salesman Problem
+- Circuit and VLSI layout
+
+## Conclusion
+
+One idea — the cut property — justifies two very different algorithms. Kruskal sorts edges and uses union–find to avoid cycles; Prim grows a tree outward with a priority queue. Both run in O(E log V) with a heap, and which one wins in practice depends on how dense the graph is.
+
+### References
+
+- T. H. Cormen, C. E. Leiserson, R. L. Rivest, C. Stein — Introduction to Algorithms, MIT Press, Ch. 23.
+- E. Horowitz, S. Sahni, S. Rajasekaran — Fundamentals of Computer Algorithms, Ch. 4 (The Greedy Method).
+
+Design & Analysis of Algorithms · Greedy Algorithms · CIA 3(a)

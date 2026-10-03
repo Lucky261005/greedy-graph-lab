@@ -1,0 +1,311 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --paper:#F4F5F1;
+    --paper-raised:#EAEBE3;
+    --ink:#14181A;
+    --ink-soft:#52585A;
+    --ink-faint:#8B918C;
+    --line:#D7D9D0;
+    --accent:#22548C;
+    --accent-soft:#DCE6F0;
+    --accent-2:#9C6A0E;
+    --accent-2-soft:#F0E4CB;
+    --code-bg:#E7E6DC;
+    --shadow:rgba(20,24,26,0.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#12161A;
+      --paper-raised:#1B2126;
+      --ink:#E8E9E3;
+      --ink-soft:#A7ADA8;
+      --ink-faint:#6C736F;
+      --line:#2B3238;
+      --accent:#7CA6DB;
+      --accent-soft:#1E2C3D;
+      --accent-2:#D6A84A;
+      --accent-2-soft:#33280F;
+      --code-bg:#1C2226;
+      --shadow:rgba(0,0,0,0.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#12161A;
+    --paper-raised:#1B2126;
+    --ink:#E8E9E3;
+    --ink-soft:#A7ADA8;
+    --ink-faint:#6C736F;
+    --line:#2B3238;
+    --accent:#7CA6DB;
+    --accent-soft:#1E2C3D;
+    --accent-2:#D6A84A;
+    --accent-2-soft:#33280F;
+    --code-bg:#1C2226;
+    --shadow:rgba(0,0,0,0.45);
+  }
+
+  .aoa-post *{box-sizing:border-box;}
+  .aoa-post{
+    background:var(--paper) !important;
+    color:var(--ink) !important;
+    font-family:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif !important;
+    line-height:1.6;
+    padding:0 20px;
+  }
+  .aoa-post h1,.aoa-post h2,.aoa-post h3{
+    font-family:"Fraunces","Georgia",serif !important;
+    text-wrap:balance;
+    font-weight:600 !important;
+    margin:0 0 .4em;
+    color:var(--ink) !important;
+    background:none !important;
+    -webkit-text-fill-color:var(--ink) !important;
+    opacity:1 !important;
+    border:none !important;
+  }
+  .aoa-post a{color:var(--accent) !important;}
+  .aoa-post code, .aoa-post .mono{font-family:"IBM Plex Mono",monospace !important;}
+  .aoa-post ::selection{background:var(--accent-soft);}
+
+  .aoa-post .wrap{max-width:1180px;margin:0 auto;}
+
+  /* ---------- Hero ---------- */
+  .aoa-post .hero{
+    padding:64px 0 40px;
+    border-bottom:1px solid var(--line);
+  }
+  .aoa-post .eyebrow{
+    font-family:"IBM Plex Mono",monospace !important;
+    font-size:.78rem;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--accent) !important;
+    display:flex;
+    align-items:center;
+    gap:.6em;
+    margin-bottom:1.1em;
+  }
+  .aoa-post .eyebrow::before{
+    content:"";
+    width:26px;height:1px;background:var(--accent);
+    display:inline-block;
+  }
+  .aoa-post .hero h1{
+    font-size:clamp(2.3rem,5vw,3.6rem) !important;
+    line-height:1.06 !important;
+    max-width:14ch;
+  }
+  .aoa-post .hero p.lede{
+    font-size:1.18rem;
+    color:var(--ink-soft) !important;
+    max-width:56ch;
+    margin:.9em 0 0;
+  }
+  .aoa-post .hero .hook{
+    margin-top:2em;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:.5em 1em;
+    max-width:56ch;
+    border-left:2px solid var(--accent-2);
+    padding-left:1.1em;
+  }
+  .aoa-post .hero .hook .q{font-family:"IBM Plex Mono",monospace !important;color:var(--accent-2) !important;font-size:.85rem;padding-top:.15em;}
+  .aoa-post .hero .hook p{margin:0;font-size:1.02rem;color:var(--ink) !important;}
+
+  /* ---------- Layout: toc + article ---------- */
+  .aoa-post .layout{
+    display:grid;
+    grid-template-columns:220px minmax(0,720px);
+    gap:56px;
+    padding:48px 0 80px;
+    justify-content:center;
+  }
+  .aoa-post nav.toc{
+    position:sticky;
+    top:28px;
+    align-self:start;
+    font-family:"IBM Plex Mono",monospace !important;
+    font-size:.82rem;
+  }
+  .aoa-post nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:toc;}
+  .aoa-post nav.toc li{counter-increment:toc;margin-bottom:.55em;}
+  .aoa-post nav.toc a{
+    color:var(--ink-soft) !important;
+    text-decoration:none;
+    display:flex;
+    gap:.6em;
+  }
+  .aoa-post nav.toc a:hover{color:var(--accent) !important;}
+  .aoa-post nav.toc a::before{
+    content:counter(toc,decimal-leading-zero);
+    color:var(--ink-faint);
+  }
+  .aoa-post nav.toc .toc-title{
+    font-family:"IBM Plex Sans",sans-serif !important;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-size:.72rem;
+    color:var(--ink-faint) !important;
+    margin-bottom:1em;
+  }
+
+  .aoa-post article section{
+    padding-top:6px;
+    margin-bottom:64px;
+    scroll-margin-top:24px;
+  }
+  .aoa-post article section:last-of-type{margin-bottom:24px;}
+  .aoa-post article h2{
+    font-size:1.7rem !important;
+    display:flex;
+    align-items:baseline;
+    gap:.5em;
+  }
+  .aoa-post article h2 .num{
+    font-family:"IBM Plex Mono",monospace !important;
+    font-size:.85rem;
+    color:var(--accent) !important;
+    font-weight:500 !important;
+  }
+  .aoa-post article h3{font-size:1.18rem !important;margin-top:1.6em;}
+  .aoa-post article p{margin:0 0 1.05em;max-width:66ch;color:var(--ink) !important;}
+  .aoa-post article ul, .aoa-post article ol{margin:0 0 1.1em;padding-left:1.3em;max-width:64ch;color:var(--ink) !important;}
+  .aoa-post article li{margin-bottom:.4em;}
+  .aoa-post .cap{color:var(--ink-soft) !important;font-size:.92rem;}
+
+  /* ---------- reusable blocks ---------- */
+  .aoa-post .callout{
+    background:var(--paper-raised) !important;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+    margin:1.3em 0;
+    color:var(--ink) !important;
+  }
+  .aoa-post .callout.accent{border-color:var(--accent);background:var(--accent-soft) !important;}
+
+  .aoa-post .pseudo{
+    background:var(--code-bg) !important;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px 18px;
+    font-family:"IBM Plex Mono",monospace !important;
+    font-size:.86rem;
+    line-height:1.65;
+    overflow-x:auto;
+    margin:1.1em 0;
+    color:var(--ink) !important;
+  }
+  .aoa-post .pseudo .kw{color:var(--accent) !important;}
+  .aoa-post .pseudo .cm{color:var(--ink-faint) !important;}
+
+  .aoa-post .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:1.2em 0;}
+  .aoa-post .card{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    background:var(--paper-raised) !important;
+    color:var(--ink) !important;
+  }
+  .aoa-post .card h4{margin:0 0 .5em;font-size:.95rem;font-family:"IBM Plex Sans" !important;font-weight:600 !important;color:var(--ink) !important;}
+  .aoa-post .card .big{font-family:"IBM Plex Mono",monospace !important;color:var(--accent) !important;}
+
+  .aoa-post table{border-collapse:collapse;width:100%;margin:1.1em 0;font-size:.92rem;}
+  .aoa-post .tbl-wrap{overflow-x:auto;margin:1.1em 0;}
+  .aoa-post .tbl-wrap table{margin:0;min-width:420px;}
+  .aoa-post th,.aoa-post td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    font-variant-numeric:tabular-nums;
+    color:var(--ink) !important;
+  }
+  .aoa-post th{
+    font-family:"IBM Plex Mono",monospace !important;
+    font-size:.74rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft) !important;
+    font-weight:500 !important;
+  }
+  .aoa-post td.mono, .aoa-post th.mono{font-family:"IBM Plex Mono",monospace !important;}
+
+  .aoa-post .eq{
+    font-family:"IBM Plex Mono",monospace !important;
+    background:var(--paper-raised) !important;
+    border-left:3px solid var(--accent);
+    padding:12px 16px;
+    margin:1em 0;
+    font-size:.9rem;
+    overflow-x:auto;
+    color:var(--ink) !important;
+  }
+
+  .aoa-post .badge{
+    display:inline-block;
+    font-family:"IBM Plex Mono",monospace !important;
+    font-size:.82rem;
+    background:var(--accent-2-soft) !important;
+    color:var(--accent-2) !important;
+    padding:.15em .55em;
+    border-radius:5px;
+  }
+
+  .aoa-post .complexity-row{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:14px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .aoa-post .complexity-row:last-child{border-bottom:none;}
+  .aoa-post .complexity-row .tag{font-family:"IBM Plex Mono",monospace !important;color:var(--accent) !important;font-weight:600 !important;}
+  .aoa-post .complexity-row p{margin:0;font-size:.95rem;color:var(--ink) !important;}
+
+  .aoa-post svg text{font-family:"IBM Plex Mono",monospace !important;fill:var(--ink-soft);}
+  .aoa-post .chart-wrap{
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--paper-raised) !important;
+    padding:14px 8px 6px;
+    margin:1.3em 0;
+  }
+
+  .aoa-post .app-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:1.2em 0;}
+  .aoa-post .app-card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--paper-raised) !important;color:var(--ink) !important;}
+  .aoa-post .app-card h4{margin:0 0 .3em;font-family:"Fraunces",serif !important;font-weight:600 !important;font-size:1.05rem;color:var(--accent) !important;}
+  .aoa-post .app-card ol{margin:.4em 0 0;padding-left:1.1em;font-size:.92rem;}
+  .aoa-post .app-card li{margin-bottom:.25em;}
+
+  .aoa-post footer{
+    border-top:1px solid var(--line);
+    padding:28px 0 48px;
+    color:var(--ink-faint) !important;
+    font-size:.85rem;
+    font-family:"IBM Plex Mono",monospace !important;
+  }
+
+  @media (max-width: 860px){
+    .aoa-post .layout{grid-template-columns:minmax(0,1fr);gap:24px;padding-top:28px;}
+    .aoa-post nav.toc{
+      position:static;
+      display:flex;
+      overflow-x:auto;
+      gap:1.2em;
+      padding-bottom:10px;
+      border-bottom:1px solid var(--line);
+    }
+    .aoa-post nav.toc ol{display:flex;gap:1.2em;}
+    .aoa-post nav.toc .toc-title{display:none;}
+    .aoa-post .grid-2, .aoa-post .app-grid{grid-template-columns:1fr;}
+    .aoa-post .hero{padding-top:40px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .aoa-post *{scroll-behavior:auto !important;}
+  }
+  .aoa-post{scroll-behavior:smooth;}
+.aoa-post article h2 .num{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none;align-self:center;display:inline-block;box-shadow:0 0 0 4px var(--accent-soft);}</style><div class="aoa-post"><header class="hero"><div class="wrap"><div class="eyebrow"> · Design &amp; Analysis of Algorithms</div><h1>Spanning the Cheapest Way</h1><p class="lede">Connect every node, spend as little as possible, and never change your mind. Kruskal’s and Prim’s algorithms show how being greedy can be proven to be optimal.</p><div class="hook"><span class="q">Q1</span><p>Six towns, nine possible cables, each with a price. Which cables do you lay?</p><span class="q">Q2</span><p>Can making the cheapest choice at each step give you the cheapest possible total?</p></div></div></header><div class="wrap"><div class="layout"><nav class="toc"><div class="toc-title">On this page</div><ol><li><a href="#problem">The problem</a></li><li><a href="#greedy">Greedy &amp; spanning trees</a></li><li><a href="#example">Running example</a></li><li><a href="#kruskal">Kruskal’s algorithm</a></li><li><a href="#prim">Prim’s algorithm</a></li><li><a href="#compare">Kruskal vs. Prim</a></li><li><a href="#applications">Where they show up</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav><article><section id="problem"><h2><span class="num"></span>The problem</h2><p>A telecom company must lay fibre between six towns. Every possible link has a price, every town must be reachable, and there is little budget. Which links do you buy?</p><p>This is the <strong>Minimum Spanning Tree (MST)</strong> problem. It is the cleanest showcase of the greedy strategy: make the cheapest safe choice now and never look back.</p></section><section id="greedy"><h2><span class="num"></span>Greedy &amp; spanning trees</h2><p>A <strong>greedy algorithm</strong> builds a solution one step at a time, always taking the option that looks best right now. It will work if two properties hold:</p><div class="grid-2"><div class="card"><h4>Greedy-choice property</h4>A locally optimal choice can always be extended to a globally optimal solution.</div><div class="card"><h4>Optimal substructure</h4>After one choice, what remains is a smaller problem of the same kind.</div></div><p>For a connected, undirected, weighted graph <span class="mono">G = (V, E)</span>, a <strong>spanning tree</strong> touches every vertex, is connected, and has no cycles (which forces it to have exactly <span class="badge">|V| − 1</span> edges). The MST is the spanning tree with the smallest total weight.</p><div class="callout accent"><strong>The cut property — why greedy is safe.</strong> Partition the vertices into any two groups. The lightest edge crossing between the groups belongs to <em>some</em> MST. Kruskal and Prim both lean on this single fact; they only differ in which cut they look at.</div></section><section id="example"><h2><span class="num"></span>Running example</h2><p>Both algorithms below use the same graph: six vertices, nine edges. Weights are shown on the amber tags.</p><div class="chart-wrap"><svg viewBox="0 0 610 225" width="100%" role="img" aria-label="Example weighted graph with six vertices A to F and nine weighted edges"><line x1="70" y1="110" x2="210" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="70" y1="110" x2="210" y2="180" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="210" y1="40" x2="210" y2="180" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="210" y1="40" x2="400" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="210" y1="180" x2="400" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="210" y1="180" x2="400" y2="180" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="40" x2="400" y2="180" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="40" x2="540" y2="110" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="180" x2="540" y2="110" stroke="var(--ink-faint)" stroke-width="1.8"/><rect x="128" y="66" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="140" y="79" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">4</text><rect x="128" y="136" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="140" y="149" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">2</text><rect x="198" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="210" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">1</text><rect x="293" y="31" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="44" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">5</text><rect x="293" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">8</text><rect x="293" y="171" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="184" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">10</text><rect x="388" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="400" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">2</text><rect x="458" y="66" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="470" y="79" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">6</text><rect x="458" y="136" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="470" y="149" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">3</text><circle cx="70" cy="110" r="19" fill="var(--accent)"/><text x="70" y="115" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">A</text><circle cx="210" cy="40" r="19" fill="var(--accent)"/><text x="210" y="45" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">B</text><circle cx="210" cy="180" r="19" fill="var(--accent)"/><text x="210" y="185" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">C</text><circle cx="400" cy="40" r="19" fill="var(--accent)"/><text x="400" y="45" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">D</text><circle cx="400" cy="180" r="19" fill="var(--accent)"/><text x="400" y="185" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">E</text><circle cx="540" cy="110" r="19" fill="var(--accent)"/><text x="540" y="115" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">F</text></svg></div><p class="cap">Figure 1 — The input graph. Grey edges are candidates; nothing is chosen yet.</p></section><section id="kruskal"><h2><span class="num"></span>Kruskal’s algorithm</h2><p>Think <strong>edges first</strong>. Sort every edge by weight, walk through them from cheapest to heaviest, and keep an edge only if it doesn’t close a cycle. Once you have <span class="mono">|V| − 1</span> edges, you stop. Cycle detection is done with a <strong>Disjoint Set Union (union–find)</strong>: an edge closes a cycle exactly when both endpoints already share a set.</p><h3>Pseudocode</h3><div class="pseudo">KRUSKAL(G):<br>&nbsp;&nbsp;&nbsp;&nbsp;A = {}<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> vertex v: <span class="kw">MAKE-SET</span>(v)<br>&nbsp;&nbsp;&nbsp;&nbsp;sort edges of G by weight, ascending<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> edge (u, v) <span class="kw">in</span> sorted order:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="kw">FIND-SET</span>(u) != <span class="kw">FIND-SET</span>(v):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A = A U {(u, v)}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">UNION</span>(u, v)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> A</div><h3>Tracing the example</h3><p>Sorted edges: B–C (1), A–C (2), D–E (2), E–F (3), A–B (4), B–D (5), D–F (6), C–D (8), C–E (10).</p><div class="tbl-wrap"><table><tbody><tr><th>Step</th><th>Edge</th><th>Weight</th><th>Decision</th><th>Total</th></tr><tr><td>1</td><td class="mono">B – C</td><td class="mono">1</td><td><span class="badge">accept</span></td><td class="mono">1</td></tr><tr><td>2</td><td class="mono">A – C</td><td class="mono">2</td><td><span class="badge">accept</span></td><td class="mono">3</td></tr><tr><td>3</td><td class="mono">D – E</td><td class="mono">2</td><td><span class="badge">accept</span></td><td class="mono">5</td></tr><tr><td>4</td><td class="mono">E – F</td><td class="mono">3</td><td><span class="badge">accept</span></td><td class="mono">8</td></tr><tr><td>5</td><td class="mono">A – B</td><td class="mono">4</td><td><span class="cap">reject · cycle</span></td><td class="mono">8</td></tr><tr><td>6</td><td class="mono">B – D</td><td class="mono">5</td><td><span class="badge">accept</span></td><td class="mono">13</td></tr><tr><td>7</td><td class="mono">D – F</td><td class="mono">6</td><td><span class="cap">reject · cycle</span></td><td class="mono">13</td></tr><tr><td>8</td><td class="mono">C – D</td><td class="mono">8</td><td><span class="cap">reject · cycle</span></td><td class="mono">13</td></tr><tr><td>9</td><td class="mono">C – E</td><td class="mono">10</td><td><span class="cap">reject · cycle</span></td><td class="mono">13</td></tr></tbody></table></div><p>A–B is rejected: A and B are already joined via C, so it would form the cycle A–C–B. B–D is accepted because it bridges the two components {A, B, C} and {D, E, F}. That is the 5th accepted edge (6 − 1), so we stop and the last three edges are never examined.</p><div class="chart-wrap"><svg viewBox="0 0 610 225" width="100%" role="img" aria-label="Minimum spanning tree found by Kruskal, highlighted in blue"><line x1="70" y1="110" x2="210" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="70" y1="110" x2="210" y2="180" stroke="var(--accent)" stroke-width="5"/><line x1="210" y1="40" x2="210" y2="180" stroke="var(--accent)" stroke-width="5"/><line x1="210" y1="40" x2="400" y2="40" stroke="var(--accent)" stroke-width="5"/><line x1="210" y1="180" x2="400" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="210" y1="180" x2="400" y2="180" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="40" x2="400" y2="180" stroke="var(--accent)" stroke-width="5"/><line x1="400" y1="40" x2="540" y2="110" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="180" x2="540" y2="110" stroke="var(--accent)" stroke-width="5"/><rect x="128" y="66" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="140" y="79" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">4</text><rect x="128" y="136" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="140" y="149" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">2</text><rect x="198" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="210" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">1</text><rect x="293" y="31" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="44" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">5</text><rect x="293" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">8</text><rect x="293" y="171" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="184" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">10</text><rect x="388" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="400" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">2</text><rect x="458" y="66" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="470" y="79" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">6</text><rect x="458" y="136" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="470" y="149" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">3</text><circle cx="70" cy="110" r="19" fill="var(--accent)"/><text x="70" y="115" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">A</text><circle cx="210" cy="40" r="19" fill="var(--accent)"/><text x="210" y="45" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">B</text><circle cx="210" cy="180" r="19" fill="var(--accent)"/><text x="210" y="185" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">C</text><circle cx="400" cy="40" r="19" fill="var(--accent)"/><text x="400" y="45" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">D</text><circle cx="400" cy="180" r="19" fill="var(--accent)"/><text x="400" y="185" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">E</text><circle cx="540" cy="110" r="19" fill="var(--accent)"/><text x="540" y="115" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">F</text></svg></div><p class="cap">Figure 2 — Kruskal’s result. Highlighted edges form the MST, total weight <span class="mono">13</span>.</p><h3>Python implementation</h3><div class="pseudo"><span class="kw">class</span> DSU:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> __init__(self, vertices):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.parent = {v: v <span class="kw">for</span> v <span class="kw">in</span> vertices}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.rank = {v: 0 <span class="kw">for</span> v <span class="kw">in</span> vertices}<br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> find(self, x):   <span class="cm"># path compression</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> self.parent[x] != x:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.parent[x] = self.find(self.parent[x])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> self.parent[x]<br><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> union(self, a, b):   <span class="cm"># union by rank</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ra, rb = self.find(a), self.find(b)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> ra == rb:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> False   <span class="cm"># same set: cycle</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> self.rank[ra] &lt; self.rank[rb]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ra, rb = rb, ra<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.parent[rb] = ra<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> self.rank[ra] == self.rank[rb]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.rank[ra] += 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> True<br><br><span class="kw">def</span> kruskal(vertices, edges):   <span class="cm"># edges = [(u, v, w), ...]</span><br>&nbsp;&nbsp;&nbsp;&nbsp;dsu, mst, total = DSU(vertices), [], 0<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> u, v, w <span class="kw">in</span> sorted(edges, key=lambda e: e[2]):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> dsu.union(u, v):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mst.append((u, v, w))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += w<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> len(mst) == len(vertices) - 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">break</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> mst, total</div><h3>Complexity</h3><div class="complexity-row"><span class="tag">Sorting</span><p>O(E log E) = O(E log V), since log E ≤ 2 log V.</p></div><div class="complexity-row"><span class="tag">Union–find</span><p>E finds and at most V − 1 unions cost O(E α(V)) — virtually linear.</p></div><div class="complexity-row"><span class="tag">Time</span><p><span class="badge">O(E log V)</span> — dominated by the sort.</p></div><div class="complexity-row"><span class="tag">Space</span><p><span class="badge">O(V + E)</span> — edge list plus the DSU arrays.</p></div></section><section id="prim"><h2><span class="num"></span>Prim’s algorithm</h2><p>Think <strong>vertices first</strong>. Start at any vertex, and grow one tree. At every step, add the cheapest edge that connects a vertex inside the tree to a vertex outside. A min-heap makes “cheapest crossing edge” a fast lookup.</p><h3>Pseudocode</h3><div class="pseudo">PRIM(G, s):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> vertex v: key[v] = INF, parent[v] = NIL<br>&nbsp;&nbsp;&nbsp;&nbsp;key[s] = 0<br>&nbsp;&nbsp;&nbsp;&nbsp;Q = all vertices   <span class="cm">// min-priority queue on key</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">while</span> Q <span class="kw">is not empty</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;u = <span class="kw">EXTRACT-MIN</span>(Q)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> neighbour v of u:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> v <span class="kw">in</span> Q <span class="kw">and</span> w(u, v) &lt; key[v]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parent[v] = u<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;key[v] = w(u, v)   <span class="cm">// DECREASE-KEY</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> {(v, parent[v])}</div><h3>Tracing the example (start at A)</h3><div class="tbl-wrap"><table><tbody><tr><th>Step</th><th>Edge picked</th><th>Weight</th><th>Tree after step</th></tr><tr><td>1</td><td class="mono">A – C</td><td class="mono">2</td><td class="mono">{A, C}</td></tr><tr><td>2</td><td class="mono">C – B</td><td class="mono">1</td><td class="mono">{A, B, C}</td></tr><tr><td>3</td><td class="mono">B – D</td><td class="mono">5</td><td class="mono">{A, B, C, D}</td></tr><tr><td>4</td><td class="mono">D – E</td><td class="mono">2</td><td class="mono">{A, B, C, D, E}</td></tr><tr><td>5</td><td class="mono">E – F</td><td class="mono">3</td><td class="mono">{A, B, C, D, E, F}</td></tr></tbody></table></div><p>Total = 2 + 1 + 5 + 2 + 3 = <span class="badge">13</span>, identical to Kruskal. The edge weights here are such that this MST is the only minimum one, so both algorithms must agree.</p><div class="chart-wrap"><svg viewBox="0 0 610 225" width="100%" role="img" aria-label="Minimum spanning tree grown by Prim from A, highlighted in blue"><line x1="70" y1="110" x2="210" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="70" y1="110" x2="210" y2="180" stroke="var(--accent)" stroke-width="5"/><line x1="210" y1="40" x2="210" y2="180" stroke="var(--accent)" stroke-width="5"/><line x1="210" y1="40" x2="400" y2="40" stroke="var(--accent)" stroke-width="5"/><line x1="210" y1="180" x2="400" y2="40" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="210" y1="180" x2="400" y2="180" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="40" x2="400" y2="180" stroke="var(--accent)" stroke-width="5"/><line x1="400" y1="40" x2="540" y2="110" stroke="var(--ink-faint)" stroke-width="1.8"/><line x1="400" y1="180" x2="540" y2="110" stroke="var(--accent)" stroke-width="5"/><rect x="128" y="66" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="140" y="79" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">4</text><rect x="128" y="136" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="140" y="149" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">2</text><rect x="198" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="210" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">1</text><rect x="293" y="31" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="44" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">5</text><rect x="293" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">8</text><rect x="293" y="171" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="305" y="184" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">10</text><rect x="388" y="101" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="400" y="114" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">2</text><rect x="458" y="66" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="470" y="79" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">6</text><rect x="458" y="136" width="24" height="18" rx="4" fill="var(--accent-2-soft)"/><text x="470" y="149" font-size="12" text-anchor="middle" font-weight="600" style="fill:var(--accent-2)">3</text><circle cx="70" cy="110" r="19" fill="var(--accent)"/><text x="70" y="115" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">A</text><circle cx="210" cy="40" r="19" fill="var(--accent)"/><text x="210" y="45" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">B</text><circle cx="210" cy="180" r="19" fill="var(--accent)"/><text x="210" y="185" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">C</text><circle cx="400" cy="40" r="19" fill="var(--accent)"/><text x="400" y="45" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">D</text><circle cx="400" cy="180" r="19" fill="var(--accent)"/><text x="400" y="185" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">E</text><circle cx="540" cy="110" r="19" fill="var(--accent)"/><text x="540" y="115" font-size="15" text-anchor="middle" font-weight="600" style="fill:var(--paper)">F</text></svg></div><p class="cap">Figure 3 — Prim’s tree after six vertices are absorbed. Same edges, different order of discovery.</p><h3>Python implementation</h3><div class="pseudo"><span class="kw">import</span> heapq<br><br><span class="kw">def</span> prim(graph, start):   <span class="cm"># graph[u] = [(v, w), ...]</span><br>&nbsp;&nbsp;&nbsp;&nbsp;visited, mst, total = {start}, [], 0<br>&nbsp;&nbsp;&nbsp;&nbsp;heap = [(w, start, v) <span class="kw">for</span> v, w <span class="kw">in</span> graph[start]]<br>&nbsp;&nbsp;&nbsp;&nbsp;heapq.heapify(heap)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">while</span> heap <span class="kw">and</span> len(visited) &lt; len(graph):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;w, u, v = heapq.heappop(heap)   <span class="cm"># cheapest crossing edge</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> v <span class="kw">in</span> visited:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">continue</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(v)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mst.append((u, v, w))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += w<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> x, wx <span class="kw">in</span> graph[v]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> x <span class="kw">not</span> <span class="kw">in</span> visited:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heapq.heappush(heap, (wx, v, x))<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> mst, total</div><h3>Complexity</h3><div class="tbl-wrap"><table><tbody><tr><th>Implementation</th><th>Time</th><th>Space</th></tr><tr><td>Adjacency matrix + array</td><td class="mono">O(V²)</td><td class="mono">O(V²)</td></tr><tr><td>Adjacency list + binary heap</td><td class="mono">O(E log V)</td><td class="mono">O(V + E)</td></tr><tr><td>Adjacency list + Fibonacci heap</td><td class="mono">O(E + V log V)</td><td class="mono">O(V + E)</td></tr></tbody></table></div></section><section id="compare"><h2><span class="num"></span>Kruskal vs. Prim</h2><div class="tbl-wrap"><table><tbody><tr><th>Aspect</th><th>Kruskal</th><th>Prim</th></tr><tr><td>Strategy</td><td>Merges a forest, edge by edge</td><td>Grows one tree, vertex by vertex</td></tr><tr><td>Key structure</td><td>Sort + union–find</td><td>Priority queue</td></tr><tr><td>Time</td><td>O(E log V)</td><td>O(E log V)</td></tr><tr><td>Best on</td><td>Sparse graphs</td><td>Dense graphs (O(V²) version)</td></tr><tr><td>Mid-run state</td><td>A forest, possibly disconnected</td><td>Always one connected tree</td></tr><tr><td>Disconnected input</td><td>Yields a spanning forest</td><td>Only reaches the start’s component</td></tr></tbody></table></div><div class="callout"><strong>Rule of thumb.</strong> Few edges relative to vertices? Reach for Kruskal. Nearly complete graph? Prim with an adjacency matrix beats everything at O(V²).</div></section><section id="applications"><h2><span class="num"></span>Where they show up</h2><div class="app-grid"><div class="app-card"><h4>Network design</h4><ol><li>Road and rail layouts</li><li>Fibre and power grids</li><li>Water pipelines</li></ol></div><div class="app-card"><h4>Routing</h4><ol><li>Broadcast and multicast trees</li><li>Spanning Tree Protocol in switches</li></ol></div><div class="app-card"><h4>Clustering</h4><ol><li>Delete the heaviest MST edges to split data into k clusters</li><li>Image segmentation</li></ol></div><div class="app-card"><h4>Approximation</h4><ol><li>2-approximation for the Travelling Salesman Problem</li><li>Circuit and VLSI layout</li></ol></div></div></section><section id="conclusion"><h2><span class="num"></span>Conclusion</h2><p>One idea — the cut property — justifies two very different algorithms. Kruskal sorts edges and uses union–find to avoid cycles; Prim grows a tree outward with a priority queue. Both run in <span class="badge">O(E log V)</span> with a heap, and which one wins in practice depends on how dense the graph is.</p><h3>References</h3><ol><li>T. H. Cormen, C. E. Leiserson, R. L. Rivest, C. Stein — <em>Introduction to Algorithms</em>, MIT Press, Ch. 23.</li><li>E. Horowitz, S. Sahni, S. Rajasekaran — <em>Fundamentals of Computer Algorithms</em>, Ch. 4 (The Greedy Method).</li></ol></section></article></div><footer>Design &amp; Analysis of Algorithms · Greedy Algorithms · CIA 3(a)</footer></div></div>
