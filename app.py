@@ -4,18 +4,23 @@ Greedy Graph Lab - Streamlit web app.
 Step-by-step visualiser for Kruskal's MST, Prim's MST and Dijkstra's shortest paths.
 Run locally:   streamlit run app.py
 """
-import base64
 import html
 import math
+import os
 import re
 import time
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from algorithms import BUILDERS, CODE, INF, ORDER, TITLES, Graph, ename, name
 
 st.set_page_config(page_title="Greedy Graph Lab", page_icon="🌿", layout="wide")
+
+# drag-and-drop graph canvas (plain HTML/JS, see canvas_component/index.html)
+canvas = components.declare_component(
+    "graph_canvas", path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "canvas_component"))
 
 # ----------------------------------------------------------------------------
 # look & feel
@@ -115,7 +120,7 @@ with st.sidebar:
             seen.add(key)
             clean.append((key[0], key[1], int(r["Weight"])))
     delay = st.slider("Seconds per step (autoplay)", 0.2, 2.5, 0.9, 0.1)
-    st.caption("Nodes keep their positions; edit the edge table to change the graph.")
+    st.caption("Drag nodes in the graph to move them; edit the table to change edges and weights.")
 
 # an edit to the edges or the start node restarts the run
 sig = (algo, tuple(clean), st.session_state.get("start", 0))
@@ -153,6 +158,8 @@ def trace_path(snap, target):
 
 
 def graph_svg(snap, path_pairs=None):
+    """SVG of the graph. Edges, weight tags and nodes carry data-* attributes so the
+    drag-and-drop component (canvas_component/index.html) can move them in the browser."""
     pos = [(x - 16, y - 96) for x, y in st.session_state.pos]
     edges = st.session_state.edges
     o = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 744 558" width="744" height="558">'
@@ -162,48 +169,52 @@ def graph_svg(snap, path_pairs=None):
          '<rect width="744" height="558" rx="14" fill="#090d1a"/>']
     states = []
     for i, e in enumerate(edges):
-        s = snap["est"][i]
+        st_ = snap["est"][i]
         if path_pairs is not None:
-            s = "path" if frozenset(e[:2]) in path_pairs else "idle"
-        states.append(s)
+            st_ = "path" if frozenset(e[:2]) in path_pairs else "idle"
+        states.append(st_)
     for i in sorted(range(len(edges)), key=lambda i: states[i] in ("accept", "path", "cmp", "relax")):
         u, v, w = edges[i]
         (x1, y1), (x2, y2) = pos[u], pos[v]
         col, wd = EDGE[states[i]]
         if states[i] in ("accept", "path", "relax", "cmp"):
-            o.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" stroke-opacity=".25" '
-                     f'stroke-width="{wd + 8}" stroke-linecap="round"/>')
+            o.append(f'<line data-u="{u}" data-v="{v}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" '
+                     f'stroke-opacity=".25" stroke-width="{wd + 8}" stroke-linecap="round"/>')
         dash = ' stroke-dasharray="6 6"' if states[i] in ("reject", "skip") else ""
         cls = ' class="flow"' if states[i] in ("accept", "path") else (
             ' class="pulse"' if states[i] == "cmp" else "")
-        o.append(f'<line{cls} x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" stroke-width="{wd}" '
-                 f'stroke-linecap="round"{dash}/>')
+        o.append(f'<line{cls} data-u="{u}" data-v="{v}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" '
+                 f'stroke-width="{wd}" stroke-linecap="round"{dash}/>')
     for i, (u, v, w) in enumerate(edges):
         (x1, y1), (x2, y2) = pos[u], pos[v]
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        o.append(f'<rect x="{mx - 14}" y="{my - 10}" width="28" height="20" rx="6" fill="#3c2c0e" '
-                 f'stroke="#6e5018"/><text x="{mx}" y="{my + 5}" text-anchor="middle" fill="{ORANGE}" '
-                 f'font-family="sans-serif" font-size="13" font-weight="700">{w}</text>')
+        o.append(f'<g class="tag" data-u="{u}" data-v="{v}" transform="translate({mx},{my})">'
+                 f'<rect x="-14" y="-10" width="28" height="20" rx="6" fill="#3c2c0e" stroke="#6e5018"/>'
+                 f'<text x="0" y="5" text-anchor="middle" fill="{ORANGE}" font-family="sans-serif" '
+                 f'font-size="13" font-weight="700">{w}</text></g>')
     comp = snap["comp"]
     for i, (x, y) in enumerate(pos):
         col = COMP[comp[i] % len(COMP)] if comp is not None else NODE[snap["nst"][i]]
         glow = comp is not None and comp.count(comp[i]) > 1 or snap["nst"][i] in ("current", "tree", "done")
+        g = [f'<g class="node" data-i="{i}" transform="translate({x},{y})">']
         if glow:
-            o.append(f'<circle cx="{x}" cy="{y}" r="30" fill="{col}" fill-opacity=".18"/>')
+            g.append(f'<circle r="30" fill="{col}" fill-opacity=".18"/>')
         cls = ' class="pulse"' if snap["nst"][i] == "current" else ""
-        o.append(f'<circle{cls} cx="{x}" cy="{y}" r="21" fill="{col}" stroke="#ffffff55" stroke-width="2"/>'
-                 f'<text x="{x}" y="{y + 6}" text-anchor="middle" fill="#fff" font-family="sans-serif" '
-                 f'font-size="18" font-weight="700">{name(i)}</text>')
+        g.append(f'<circle{cls} r="21" fill="{col}" stroke="#ffffff55" stroke-width="2"/>'
+                 f'<text y="6" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="18" '
+                 f'font-weight="700" style="pointer-events:none">{name(i)}</text>')
         if algo != "kruskal" and i == st.session_state.start:
-            o.append(f'<circle cx="{x}" cy="{y}" r="27" fill="none" stroke="{GOLD}" stroke-width="2"/>'
-                     f'<text x="{x}" y="{y + 42}" text-anchor="middle" fill="{GOLD}" font-family="sans-serif" '
-                     f'font-size="10" font-weight="700">START</text>')
+            g.append(f'<circle r="27" fill="none" stroke="{GOLD}" stroke-width="2"/>'
+                     f'<text y="42" text-anchor="middle" fill="{GOLD}" font-family="sans-serif" '
+                     f'font-size="10" font-weight="700" style="pointer-events:none">START</text>')
         lab = snap["nlab"][i]
         if lab is not None and algo == "dijkstra":
-            c = FAINT = "#5c6882" if lab == "inf" else CYAN
-            o.append(f'<rect x="{x - 17}" y="{y - 49}" width="34" height="20" rx="6" fill="{c}22" stroke="{c}"/>'
-                     f'<text x="{x}" y="{y - 35}" text-anchor="middle" fill="{c}" font-family="sans-serif" '
-                     f'font-size="13" font-weight="700">{"∞" if lab == "inf" else lab}</text>')
+            c = "#5c6882" if lab == "inf" else CYAN
+            g.append(f'<rect x="-17" y="-49" width="34" height="20" rx="6" fill="{c}22" stroke="{c}"/>'
+                     f'<text y="-35" text-anchor="middle" fill="{c}" font-family="sans-serif" '
+                     f'font-size="13" font-weight="700" style="pointer-events:none">{"∞" if lab == "inf" else lab}</text>')
+        g.append("</g>")
+        o.append("".join(g))
     o.append("</svg>")
     return "".join(o)
 
@@ -299,9 +310,14 @@ with left:
             st.success(("Shortest path: " + "  ›  ".join(name(x) for x in path) +
                         f"   (cost {snap['panel']['dist'][ord(tgt) - 65]})") if path
                        else f"{tgt} is unreachable from the start node.")
-    svg64 = base64.b64encode(graph_svg(snap, path_pairs).encode("utf-8")).decode()
-    st.markdown(f'<img src="data:image/svg+xml;base64,{svg64}" style="width:100%;border:1px solid #1e2944;'
-                f'border-radius:14px">', unsafe_allow_html=True)
+    moved = canvas(svg=graph_svg(snap, path_pairs), pos=[[x - 16, y - 96] for x, y in st.session_state.pos],
+                   key=f"canvas{st.session_state.gver}", default=None)
+    if moved:
+        new_pos = [(round(x + 16), round(y + 96)) for x, y in moved]
+        if len(new_pos) == len(st.session_state.pos) and new_pos != list(st.session_state.pos):
+            st.session_state.pos = new_pos
+            st.rerun()
+    st.caption("Drag the nodes to rearrange the graph.")
 
 with right:
     st.html(f'<div class="card"><div class="status" style="color:{KIND[snap["kind"]]}">'

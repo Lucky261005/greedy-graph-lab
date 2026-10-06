@@ -24,12 +24,13 @@ streamlit run app.py
 ```
 
 - Pick an algorithm in the sidebar, then use **Play**, **Prev**, **Next** or the step slider.
+- **Drag the nodes** to rearrange the graph.
 - Switch between the sample graph and a random graph, choose the start node, and edit edge weights in the table (rows can be added or deleted).
 - After Dijkstra finishes, choose a node to trace its shortest path.
 
 ## Run the desktop version (pygame)
 
-A second front end with a drag-and-drop graph editor:
+A second front end with a full graph editor (add and delete nodes and edges):
 
 ```bash
 pip install pygame-ce
@@ -47,6 +48,7 @@ Keys: `1`/`2`/`3` algorithm, `Space` play/pause, `Left`/`Right` step, `R` restar
 
 ```
 app.py                Streamlit web app
+canvas_component/     small HTML/JS component that makes the nodes draggable
 algorithms.py         Kruskal, Prim, Dijkstra with step recording (no GUI code)
 greedy_graph_lab.py   pygame desktop version
 requirements.txt      dependencies of the web app
@@ -56,7 +58,7 @@ blog/                 the accompanying blog post (text and Blogger HTML)
 
 ## Limitations
 
-- In the web app, node positions are fixed; only the edges and weights can be edited.
+- In the web app, nodes cannot be added or deleted (edges and weights can); the desktop version has a full graph editor.
 - Up to 12 nodes and 24 edges; weights are whole numbers from 1 to 99.
 - Dijkstra does not support negative weights.
 

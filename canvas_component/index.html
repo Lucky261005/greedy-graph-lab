@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; }
+  svg { display: block; width: 100%; height: auto; border: 1px solid #1e2944; border-radius: 14px;
+        touch-action: none; user-select: none; }
+  .node { cursor: grab; }
+  .node.drag { cursor: grabbing; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// --- minimal Streamlit component protocol (no build step needed) ---
+function send(type, data) {
+  window.parent.postMessage(Object.assign({ isStreamlitMessage: true, type: type }, data || {}), "*");
+}
+var pos = [], svg = null, dragging = null, moved = false;
+
+function fit() {
+  send("streamlit:setFrameHeight", { height: Math.ceil(document.body.getBoundingClientRect().height) + 4 });
+}
+
+// move every edge end, weight tag and node to the current positions
+function apply() {
+  svg.querySelectorAll("line[data-u]").forEach(function (l) {
+    var a = pos[+l.dataset.u], b = pos[+l.dataset.v];
+    l.setAttribute("x1", a[0]); l.setAttribute("y1", a[1]);
+    l.setAttribute("x2", b[0]); l.setAttribute("y2", b[1]);
+  });
+  svg.querySelectorAll("g.tag").forEach(function (t) {
+    var a = pos[+t.dataset.u], b = pos[+t.dataset.v];
+    t.setAttribute("transform", "translate(" + (a[0] + b[0]) / 2 + "," + (a[1] + b[1]) / 2 + ")");
+  });
+  svg.querySelectorAll("g.node").forEach(function (n) {
+    var p = pos[+n.dataset.i];
+    n.setAttribute("transform", "translate(" + p[0] + "," + p[1] + ")");
+  });
+}
+
+function toSvg(e) {
+  var pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function render(args) {
+  document.getElementById("root").innerHTML = args.svg;
+  svg = document.querySelector("svg");
+  pos = args.pos.map(function (p) { return p.slice(); });
+  apply();
+  svg.addEventListener("pointerdown", function (e) {
+    var g = e.target.closest("g.node");
+    if (!g) return;
+    dragging = +g.dataset.i; moved = false;
+    g.classList.add("drag");
+    svg.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  svg.addEventListener("pointermove", function (e) {
+    if (dragging === null) return;
+    var p = toSvg(e);
+    pos[dragging] = [Math.max(40, Math.min(704, Math.round(p.x))), Math.max(52, Math.min(520, Math.round(p.y)))];
+    moved = true;
+    apply();
+  });
+  function end(e) {
+    if (dragging === null) return;
+    svg.querySelectorAll(".node.drag").forEach(function (n) { n.classList.remove("drag"); });
+    dragging = null;
+    if (moved) send("streamlit:setComponentValue", { value: pos, dataType: "json" });
+  }
+  svg.addEventListener("pointerup", end);
+  svg.addEventListener("pointercancel", end);
+  fit();
+}
+
+window.addEventListener("message", function (e) {
+  if (e.data && e.data.type === "streamlit:render") render(e.data.args);
+});
+send("streamlit:componentReady", { apiVersion: 1 });
+window.addEventListener("resize", fit);
+</script>
+</body>
+</html>
