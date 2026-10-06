@@ -10,13 +10,15 @@ An interactive, step-by-step simulator for three greedy graph algorithms from th
 
 Each step shows the greedy choice, the data structure in use (Union-Find sets or a priority queue), the line of code being executed, and a short explanation.
 
+**Live demo:** https://lucky261005.github.io/greedy-graph-lab/  (runs in your browser; the first load takes a few seconds)
+
 ## Screenshots
 
 ![Kruskal](screenshots/kruskal.png)
 ![Prim](screenshots/prim.png)
 ![Dijkstra](screenshots/dijkstra.png)
 
-## Run it
+## Run it on your computer
 
 ```bash
 pip install -r requirements.txt
@@ -47,15 +49,30 @@ After Dijkstra finishes, click any node to trace its shortest path.
 ## Project structure
 
 ```
-greedy_graph_lab.py   the simulator
+greedy_graph_lab.py   the simulator (runs on desktop and in the browser)
+main.py               entry point for the browser build
+fonts/                fonts used by the browser build
+docs/                 the browser build, published with GitHub Pages
 requirements.txt      dependencies
 screenshots/          images used in this README
 blog/                 the accompanying blog post (text and Blogger HTML)
 ```
 
+## Rebuilding the web version
+
+The web version is the same Python code, compiled for the browser with [pygbag](https://github.com/pygame-web/pygbag):
+
+```bash
+pip install pygbag
+# put main.py, greedy_graph_lab.py and fonts/ in a folder, then:
+python -m pygbag --build <folder>
+```
+
+Copy the files from `<folder>/build/web` into `docs/`.
+
 ## Limitations
 
-- Desktop app only (needs Python and pygame-ce).
+- The web version needs a desktop browser (mouse and keyboard); the first load downloads the Python runtime.
 - Up to 12 nodes and 24 edges.
 - Edge weights are whole numbers from 1 to 99; Dijkstra does not support negative weights.
 

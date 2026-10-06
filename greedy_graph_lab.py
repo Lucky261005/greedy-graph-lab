@@ -26,6 +26,7 @@ node/edge, data-structure contents, the code line being executed, an explanation
 after each meaningful action.  The App then plays the snapshots back with smooth
 animation, so you can pause, step forward/backward or drag the progress bar.
 """
+import asyncio
 import heapq
 import math
 import os
@@ -37,6 +38,8 @@ import pygame
 
 W, H = 1280, 800
 INF = float("inf")
+WEB = sys.platform == "emscripten"      # running in the browser (pygbag)
+INF_TXT = "inf" if WEB else "∞"
 
 INK = (232, 236, 245)
 SOFT = (150, 162, 184)
@@ -159,9 +162,14 @@ _fonts = {}
 def font(size, bold=False, mono=False):
     key = (size, bold, mono)
     if key not in _fonts:
-        names = "consolas,couriernew,dejavusansmono,monospace" if mono else \
-                "segoeui,helveticaneue,arial,dejavusans"
-        _fonts[key] = pygame.font.SysFont(names, size, bold=bold)
+        if WEB:      # browsers have no system fonts, so use the bundled DejaVu fonts
+            base = "DejaVuSansMono" if mono else "DejaVuSans"
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts",
+                                base + ("-Bold" if bold else "") + ".ttf")
+            _fonts[key] = pygame.font.Font(path, max(8, int(size * 0.9)))
+        else:
+            names = "consolas,couriernew,dejavusansmono,monospace" if mono else                     "segoeui,helveticaneue,arial,dejavusans"
+            _fonts[key] = pygame.font.SysFont(names, size, bold=bold)
     return _fonts[key]
 
 
@@ -985,7 +993,7 @@ def _draw_node(self, s, i, snap):
         c = CYAN if lab != "inf" else FAINT
         pygame.draw.rect(s, mix(PANEL, c, 0.16), rr, border_radius=6)
         pygame.draw.rect(s, c, rr, 1, border_radius=6)
-        draw_text(s, txt if txt != "inf" else "∞", rr.center, 13, c, bold=True, center=True)
+        draw_text(s, txt if txt != "inf" else INF_TXT, rr.center, 13, c, bold=True, center=True)
 
 
 App.draw_node = lambda self, s, i, snap: _draw_node(self, s, i, snap)
@@ -1084,7 +1092,7 @@ def _draw_data(self, s, snap):
             pygame.draw.rect(s, col, rr, 1, border_radius=8)
             d = p["dist"][v]
             draw_text(s, name(v), (rr.x + 9, rr.y + 5), 13, INK, bold=True)
-            draw_text(s, "∞" if d == INF else str(d), (rr.right - 8, rr.y + 3), 17, col, bold=True, right=True)
+            draw_text(s, INF_TXT if d == INF else str(d), (rr.right - 8, rr.y + 3), 17, col, bold=True, right=True)
             pv = p["prev"][v]
             draw_text(s, "from " + (name(pv) if pv is not None else "-"), (rr.x + 9, rr.y + 30), 11, SOFT)
         y = r.y + 30 + ((self.g.n + cols - 1) // cols) * (ch + 6) + 8
@@ -1228,7 +1236,7 @@ def _handle(self, ev):
                 return True
         k = ev.key
         if k == pygame.K_ESCAPE:
-            return False
+            return WEB            # Esc quits the desktop app; in the browser it does nothing
         if k == pygame.K_SPACE:
             self.toggle()
         elif k == pygame.K_RIGHT:
@@ -1348,7 +1356,7 @@ def _scrub(self, x):
     self.set_step(round(max(0, min(1, frac)) * (len(self.snaps) - 1)))
 
 
-def _run(self):
+async def _run(self):
     running = True
     while running:
         dt = min(self.clock.tick(60) / 1000.0, 0.05)
@@ -1356,12 +1364,13 @@ def _run(self):
             running = self.handle(ev) and running
         self.update(dt)
         self.draw()
+        await asyncio.sleep(0)        # lets the browser breathe (needed for pygbag)
     pygame.quit()
 
 
 App.node_at, App.edge_at, App.compute_trace = _node_at, _edge_at, _compute_trace
-App.handle, App.stage_click, App.scrub, App.run = _handle, _stage_click, _scrub, _run
+App.handle, App.stage_click, App.scrub, App.run_async = _handle, _stage_click, _scrub, _run
 
 
 if __name__ == "__main__":
-    App().run()
+    asyncio.run(App().run_async())
