@@ -36,7 +36,9 @@ KIND = {"cmp": CYAN, "take": GREEN, "done": GREEN, "reject": PINK, "info": "#e8e
 
 st.html("""
 <style>
-.block-container{padding-top:1.4rem;max-width:1400px}
+.block-container{padding-top:3.4rem;max-width:1400px}
+.stButton button{white-space:nowrap}
+h1{padding-top:0!important;line-height:1.2!important}
 .card{background:#090d1a;border:1px solid #1e2944;border-radius:14px;padding:14px 18px;margin-bottom:12px}
 .card h4{margin:0 0 8px;font:600 11px/1 sans-serif;letter-spacing:.08em;color:#5c6882;text-transform:uppercase}
 .chip{display:inline-block;margin:0 6px 6px 0;padding:3px 10px;border-radius:8px;border:1px solid;
@@ -328,7 +330,7 @@ with right:
 m = st.columns(4)
 m[0].markdown(f"**{snap['info']}**")
 for col, (label, val, _) in zip(m[1:], snap["stats"]):
-    col.metric(label.title(), val)
+    col.metric(label.title().replace("Mst", "MST"), val)
 m[3].metric("Step", f"{st.session_state.step + 1} / {len(snaps)}")
 
 # autoplay: wait, advance one step, rerun

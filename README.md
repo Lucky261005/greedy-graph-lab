@@ -1,4 +1,4 @@
-# Greedy Graph Lab
+﻿# Greedy Graph Lab
 
 An interactive, step-by-step visualiser for three greedy graph algorithms from the DAA syllabus (Unit 3):
 
@@ -10,7 +10,7 @@ An interactive, step-by-step visualiser for three greedy graph algorithms from t
 
 Each step shows the greedy choice, the data structure in use (Union-Find sets or a priority queue), the line of code being executed, and a short explanation.
 
-## Screenshots
+## Screenshots (desktop version)
 
 ![Kruskal](screenshots/kruskal.png)
 ![Prim](screenshots/prim.png)
